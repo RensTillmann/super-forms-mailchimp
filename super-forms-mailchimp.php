@@ -459,7 +459,6 @@ if(!class_exists('SUPER_Mailchimp')) :
             
             $data = $atts['post']['data'];
             if( isset( $data['mailchimp_list_id'] ) ) {
-                echo 'Mailchimp element has been found :)';
 
                 // Retreive the list ID
                 $list_id = sanitize_text_field( $data['mailchimp_list_id']['value'] );
