@@ -270,47 +270,55 @@ if(!class_exists('SUPER_Mailchimp')) :
                     $result .= '<strong style="color:red;">Please enter your List ID and choose wether or not to retrieve Groups based on your List.</strong>';
                 }else{
                     $list_id = sanitize_text_field( $atts['list_id'] );
-                    if( $atts['display_interests']=='yes' ) {
-                        $api_key = $settings['mailchimp_key'];
-                        $datacenter = explode('-', $api_key);
-                        $datacenter = $datacenter[1];
-                        $endpoint = 'https://' . $datacenter . '.api.mailchimp.com/3.0/';
-                        $request = 'lists/' . $list_id . '/interest-categories/';
-                        $url = $endpoint . $request;
-                        $ch = curl_init();
-                        curl_setopt( $ch, CURLOPT_URL, $url );
-                        curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'content-type: application/json' ) );
-                        curl_setopt( $ch, CURLOPT_USERPWD, 'anystring:' . $api_key ); 
-                        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                        curl_setopt( $ch, CURLOPT_ENCODING, '' );
-                        $output = curl_exec( $ch );
-                        $output = json_decode( $output );
-                        if( !isset( $output->categories ) ) {
-                            $result .= '<strong style="color:red;">The List ID seems to be invalid, please make sure you entered to correct List ID.</strong>';
-                        }else{
-                            $result .= SUPER_Shortcodes::opening_wrapper( $atts );
-                            foreach( $output->categories as $k => $v ) {
-                                $request = $request . $v->id . '/interests/';
-                                $url = $endpoint.$request;
-                                $ch = curl_init();
-                                curl_setopt( $ch, CURLOPT_URL, $url );
-                                curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'content-type: application/json' ) );
-                                curl_setopt( $ch, CURLOPT_USERPWD, 'anystring:' . $api_key ); 
-                                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                                curl_setopt( $ch, CURLOPT_ENCODING, '' );
-                                $output = curl_exec( $ch );
-                                $output = json_decode( $output );
-                                foreach( $output->interests as $ik => $iv ) {
-                                    $result .= '<label><input type="checkbox" value="' . esc_attr( $iv->id ) . '" />' . $iv->name . '</label>';
-                                }
-                            }
-                            $result .= '<input class="super-shortcode-field" type="hidden"';
-                            $result .= ' name="mailchimp_interests" value=""';
-                            $result .= SUPER_Shortcodes::common_attributes( $atts, $tag );
-                            $result .= ' />';
-                            $result .= '</div>';
-                        }
-                    }
+                    $api_key = $settings['mailchimp_key'];
+                    $datacenter = explode('-', $api_key);
+                    if( !isset( $datacenter[1] ) ) {
+                		$result .= '<strong style="color:red;">Your API key seems to be invalid</strong>';
+                    }else{
+                    	if( $atts['display_interests']=='yes' ) {
+	                        $datacenter = $datacenter[1];
+	                        $endpoint = 'https://' . $datacenter . '.api.mailchimp.com/3.0/';
+	                        $request = 'lists/' . $list_id . '/interest-categories/';
+	                        $url = $endpoint . $request;
+	                        $ch = curl_init();
+	                        curl_setopt( $ch, CURLOPT_URL, $url );
+	                        curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'content-type: application/json' ) );
+	                        curl_setopt( $ch, CURLOPT_USERPWD, 'anystring:' . $api_key ); 
+	                        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+	                        curl_setopt( $ch, CURLOPT_ENCODING, '' );
+	                        $output = curl_exec( $ch );
+	                        $output = json_decode( $output );
+	                        if( ( isset( $output->status ) ) && ( $output->status==401 ) ) {
+								$result .= '<strong style="color:red;">' . $output->detail . '</strong>';
+	                        }else{
+		                        if( !isset( $output->categories ) ) {
+		                            $result .= '<strong style="color:red;">The List ID seems to be invalid, please make sure you entered to correct List ID.</strong>';
+		                        }else{
+		                            $result .= SUPER_Shortcodes::opening_wrapper( $atts );
+		                            foreach( $output->categories as $k => $v ) {
+		                                $request = $request . $v->id . '/interests/';
+		                                $url = $endpoint.$request;
+		                                $ch = curl_init();
+		                                curl_setopt( $ch, CURLOPT_URL, $url );
+		                                curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'content-type: application/json' ) );
+		                                curl_setopt( $ch, CURLOPT_USERPWD, 'anystring:' . $api_key ); 
+		                                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		                                curl_setopt( $ch, CURLOPT_ENCODING, '' );
+		                                $output = curl_exec( $ch );
+		                                $output = json_decode( $output );
+		                                foreach( $output->interests as $ik => $iv ) {
+		                                    $result .= '<label><input type="checkbox" value="' . esc_attr( $iv->id ) . '" />' . $iv->name . '</label>';
+		                                }
+		                            }
+		                            $result .= '<input class="super-shortcode-field" type="hidden"';
+		                            $result .= ' name="mailchimp_interests" value=""';
+		                            $result .= SUPER_Shortcodes::common_attributes( $atts, $tag );
+		                            $result .= ' />';
+		                            $result .= '</div>';
+		                        }
+	                    	}
+	                    }
+	                }
                 }
             }
             $result .= SUPER_Shortcodes::loop_conditions( $atts );
