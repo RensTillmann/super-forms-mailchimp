@@ -1,2 +1,5 @@
+May 3, 2016 – Version 1.0.1
+- Changed: API key no longer visible under settings on create form page
+
 December 17, 2015 – Version 1.0.0
 - Initial release!

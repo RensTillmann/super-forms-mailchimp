@@ -226,7 +226,7 @@ if(!class_exists('SUPER_Mailchimp')) :
             $array['super-mailchimp'] = array(
                 'src'     => $backend_path . 'mailchimp' . $suffix . '.css',
                 'deps'    => '',
-                'version' => SUPER_VERSION,
+                'version' => SUPER_Mailchimp()->version,
                 'media'   => 'all',
                 'screen'  => array( 
                     'super-forms_page_super_create_form'
@@ -242,7 +242,7 @@ if(!class_exists('SUPER_Mailchimp')) :
          *
          *  @since      1.0.0
         */
-        public static function mailchimp( $tag, $atts ) {
+        public static function mailchimp( $tag, $atts, $inner, $shortcodes=null, $settings=null ) {
             if( !isset( $atts['display_interests'] ) ) $atts['display_interests'] = 'no';
 
             if( $atts['display_interests']=='no' ) {
@@ -294,7 +294,7 @@ if(!class_exists('SUPER_Mailchimp')) :
 		                        if( !isset( $output->categories ) ) {
 		                            $result .= '<strong style="color:red;">The List ID seems to be invalid, please make sure you entered to correct List ID.</strong>';
 		                        }else{
-		                            $result .= SUPER_Shortcodes::opening_wrapper( $atts );
+		                            $result .= SUPER_Shortcodes::opening_wrapper( $atts, $inner, $shortcodes, $settings );
 		                            foreach( $output->categories as $k => $v ) {
 		                                $request = $request . $v->id . '/interests/';
 		                                $url = $endpoint.$request;
@@ -444,6 +444,7 @@ if(!class_exists('SUPER_Mailchimp')) :
         */
         public static function add_mailchimp_settings( $array, $settings ) {
             $array['mailchimp'] = array(        
+                'hidden' => true,
                 'name' => __( 'Mailchimp', 'super' ),
                 'label' => __( 'Mailchimp Settings', 'super' ),
                 'fields' => array(
