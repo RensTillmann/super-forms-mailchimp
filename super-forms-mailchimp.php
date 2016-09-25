@@ -361,36 +361,36 @@ if(!class_exists('SUPER_Mailchimp')) :
 
             $array['form_elements']['shortcodes']['mailchimp'] = array(
                 'callback' => 'SUPER_Mailchimp::mailchimp',
-                'name' => __( 'Mailchimp', 'super' ),
+                'name' => __( 'Mailchimp', 'super-forms' ),
                 'icon' => 'mailchimp',
                 'atts' => array(
                     'general' => array(
-                        'name' => __( 'General', 'super' ),
+                        'name' => __( 'General', 'super-forms' ),
                         'fields' => array(
                             'list_id' => array(
-                                'name'=>__( 'Mailchimp List ID', 'super' ), 
-                                'desc'=>__( 'Your List ID for example: 9e67587f52', 'super' ),
+                                'name'=>__( 'Mailchimp List ID', 'super-forms' ), 
+                                'desc'=>__( 'Your List ID for example: 9e67587f52', 'super-forms' ),
                                 'default'=> (!isset($attributes['list_id']) ? '' : $attributes['list_id']),
                                 'required'=>true, 
                             ),
                             'display_interests' => array(
-                                'name'=>__( 'Display interests', 'super' ),
-                                'desc'=>__( 'Allow users to select one or more interests (retrieved by given List ID)', 'super' ),
+                                'name'=>__( 'Display interests', 'super-forms' ),
+                                'desc'=>__( 'Allow users to select one or more interests (retrieved by given List ID)', 'super-forms' ),
                                 'type' => 'select',
                                 'default'=> (!isset($attributes['interests']) ? 'no' : $attributes['interests']),
                                 'values' => array(
-                                    'no' => __( 'No', 'super' ), 
-                                    'yes' => __( 'Yes', 'super' ), 
+                                    'no' => __( 'No', 'super-forms' ), 
+                                    'yes' => __( 'Yes', 'super-forms' ), 
                                 ),
                             ),
                             'send_confirmation' => array(
-                                'name'=>__( 'Send the Mailchimp confirmation email', 'super' ),
-                                'desc'=>__( 'Users will receive a confirmation email before they are subscribed', 'super' ),
+                                'name'=>__( 'Send the Mailchimp confirmation email', 'super-forms' ),
+                                'desc'=>__( 'Users will receive a confirmation email before they are subscribed', 'super-forms' ),
                                 'type' => 'select',
                                 'default'=> (!isset($attributes['send_confirmation']) ? 'no' : $attributes['send_confirmation']),
                                 'values' => array(
-                                    'no' => __( 'No', 'super' ), 
-                                    'yes' => __( 'Yes', 'super' ), 
+                                    'no' => __( 'No', 'super-forms' ), 
+                                    'yes' => __( 'Yes', 'super-forms' ), 
                                 ),
                             ),                            
                             'email' => SUPER_Shortcodes::email($attributes, $default='Interests'),
@@ -402,17 +402,17 @@ if(!class_exists('SUPER_Mailchimp')) :
                         )
                     ),
                     'advanced' => array(
-                        'name' => __( 'Advanced', 'super' ),
+                        'name' => __( 'Advanced', 'super-forms' ),
                         'fields' => array(
                             'maxlength' => $maxlength,
                             'minlength' => $minlength,
                             'display' => array(
-                                'name'=>__( 'Vertical / Horizontal display', 'super' ), 
+                                'name'=>__( 'Vertical / Horizontal display', 'super-forms' ), 
                                 'type' => 'select',
                                 'default'=> (!isset($attributes['display']) ? 'vertical' : $attributes['display']),
                                 'values' => array(
-                                    'vertical' => __( 'Vertical display ( | )', 'super' ), 
-                                    'horizontal' => __( 'Horizontal display ( -- )', 'super' ), 
+                                    'vertical' => __( 'Vertical display ( | )', 'super-forms' ), 
+                                    'horizontal' => __( 'Horizontal display ( -- )', 'super-forms' ), 
                                 ),
                             ),
                             'grouped' => $grouped,                    
@@ -423,7 +423,7 @@ if(!class_exists('SUPER_Mailchimp')) :
                         ),
                     ),
                     'icon' => array(
-                        'name' => __( 'Icon', 'super' ),
+                        'name' => __( 'Icon', 'super-forms' ),
                         'fields' => array(
                             'icon_position' => $icon_position,
                             'icon_align' => $icon_align,
@@ -445,11 +445,11 @@ if(!class_exists('SUPER_Mailchimp')) :
         public static function add_mailchimp_settings( $array, $settings ) {
             $array['mailchimp'] = array(        
                 'hidden' => true,
-                'name' => __( 'Mailchimp', 'super' ),
-                'label' => __( 'Mailchimp Settings', 'super' ),
+                'name' => __( 'Mailchimp', 'super-forms' ),
+                'label' => __( 'Mailchimp Settings', 'super-forms' ),
                 'fields' => array(
                     'mailchimp_key' => array(
-                        'name' => __( 'API key', 'super' ),
+                        'name' => __( 'API key', 'super-forms' ),
                         'default' => SUPER_Settings::get_value( 0, 'mailchimp_key', $settings['settings'], '' ),
                     )
                 )
