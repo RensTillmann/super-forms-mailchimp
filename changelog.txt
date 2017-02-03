@@ -1,3 +1,6 @@
+Feb 03, 2017 - Version 1.1.0
+- Added: Automatic updates
+
 May 3, 2016 – Version 1.0.1
 - Changed: API key no longer visible under settings on create form page
 

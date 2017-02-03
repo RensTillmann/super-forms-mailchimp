@@ -1,17 +1,17 @@
 <?php
 /**
- * Super Forms Mailchimp
+ * Super Forms - Mailchimp
  *
- * @package   Super Forms Mailchimp
+ * @package   Super Forms - Mailchimp
  * @author    feeling4design
  * @link      http://codecanyon.net/item/super-forms-drag-drop-form-builder/13979866
  * @copyright 2015 by feeling4design
  *
  * @wordpress-plugin
- * Plugin Name: Super Forms Mailchimp
+ * Plugin Name: Super Forms - Mailchimp
  * Plugin URI:  http://codecanyon.net/item/super-forms-drag-drop-form-builder/13979866
  * Description: Subscribes and unsubscribes users from a specific Mailchimp list
- * Version:     1.0.0
+ * Version:     1.1.0
  * Author:      feeling4design
  * Author URI:  http://codecanyon.net/user/feeling4design
 */
@@ -37,9 +37,18 @@ if(!class_exists('SUPER_Mailchimp')) :
          *
          *	@since		1.0.0
         */
-        public $version = '1.0.0';
+        public $version = '1.1.0';
 
         
+        /**
+         * @var string
+         *
+         *  @since      1.1.0
+        */
+        public $add_on_slug = 'mailchimp';
+        public $add_on_name = 'Mailchimp';
+
+
         /**
          * @var SUPER_Mailchimp The single instance of the class
          *
@@ -142,7 +151,11 @@ if(!class_exists('SUPER_Mailchimp')) :
         */
         private function init_hooks() {
             
-            // Filters since 1.0.0
+            // @since 1.1.0
+            register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
+            // Filters since 1.1.0
+            add_filter( 'super_after_activation_message_filter', array( $this, 'activation_message' ), 10, 2 );
+
 
             // Actions since 1.0.0
             add_filter( 'super_shortcodes_after_form_elements_filter', array( $this, 'add_mailchimp_element' ), 10, 2 );
@@ -165,6 +178,12 @@ if(!class_exists('SUPER_Mailchimp')) :
                 add_action( 'super_before_load_form_dropdown_hook', array( $this, 'add_ready_to_use_forms' ) );
                 add_action( 'super_after_load_form_dropdown_hook', array( $this, 'add_ready_to_use_forms_json' ) );
 
+                // Filters since 1.1.0
+                add_filter( 'super_settings_end_filter', array( $this, 'activation' ), 100, 2 );
+
+                // Actions since 1.1.0
+                add_action( 'init', array( $this, 'update_plugin' ) );
+
             }
             
             if ( $this->is_request( 'ajax' ) ) {
@@ -178,6 +197,62 @@ if(!class_exists('SUPER_Mailchimp')) :
             
         }
 
+
+        /**
+         * Automatically update plugin from the repository
+         *
+         *  @since      1.1.0
+        */
+        function update_plugin() {
+            if( defined('SUPER_PLUGIN_DIR') ) {
+                require_once ( SUPER_PLUGIN_DIR . '/includes/admin/update-super-forms.php' );
+                $plugin_remote_path = 'http://f4d.nl/super-forms/';
+                $plugin_slug = plugin_basename( __FILE__ );
+                new SUPER_WP_AutoUpdate( $this->version, $plugin_remote_path, $plugin_slug, '', '', $this->add_on_slug );
+            }
+        }
+
+
+        /**
+         * Add the activation under the "Activate" TAB
+         * 
+         * @since       1.1.0
+        */
+        public function activation($array, $data) {
+            if (method_exists('SUPER_Forms','add_on_activation')) {
+                return SUPER_Forms::add_on_activation($array, $this->add_on_slug, $this->add_on_name);
+            }else{
+                return $array;
+            }
+        }
+
+
+        /**  
+         *  Deactivate
+         *
+         *  Upon plugin deactivation delete activation
+         *
+         *  @since      1.1.0
+         */
+        public static function deactivate(){
+            if (method_exists('SUPER_Forms','add_on_deactivate')) {
+                SUPER_Forms::add_on_deactivate(SUPER_Mailchimp()->add_on_slug);
+            }
+        }
+
+
+        /**
+         * Check license and show activation message
+         * 
+         * @since       1.1.0
+        */
+        public function activation_message( $activation_msg, $data ) {
+            if (method_exists('SUPER_Forms','add_on_activation_message')) {
+                return SUPER_Forms::add_on_activation_message($activation_msg, $this->add_on_slug, $this->add_on_name);
+            }
+            return $activation_msg;
+        }
+        
         
         /**
          * Hook into the load form dropdown and add some ready to use forms
