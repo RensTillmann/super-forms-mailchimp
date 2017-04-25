@@ -11,7 +11,7 @@
  * Plugin Name: Super Forms - Mailchimp
  * Plugin URI:  http://codecanyon.net/item/super-forms-drag-drop-form-builder/13979866
  * Description: Subscribes and unsubscribes users from a specific Mailchimp list
- * Version:     1.1.0
+ * Version:     1.3.0
  * Author:      feeling4design
  * Author URI:  http://codecanyon.net/user/feeling4design
 */
@@ -37,7 +37,7 @@ if(!class_exists('SUPER_Mailchimp')) :
          *
          *	@since		1.0.0
         */
-        public $version = '1.1.0';
+        public $version = '1.3.0';
 
         
         /**
@@ -417,6 +417,9 @@ if(!class_exists('SUPER_Mailchimp')) :
                 $result .= SUPER_Shortcodes::opening_tag( 'hidden', $atts, $classes );
                 $result .= '<input class="super-shortcode-field" type="hidden" value="' . $list_id . '" name="mailchimp_list_id" data-exclude="2" />';
                 $result .= '</div>';
+
+                // @since 1.2.0 - add the merge fields       
+                if( (isset($atts['custom_fields'])) && ($atts['custom_fields']!='') ) $result .= '<textarea class="super-shortcode-field super-hidden" name="mailchimp_custom_fields_' . $list_id . '" data-exclude="2">' . $atts['custom_fields'] . '</textarea>';
             }
 
             return $result;
@@ -447,6 +450,13 @@ if(!class_exists('SUPER_Mailchimp')) :
                                 'desc'=>__( 'Your List ID for example: 9e67587f52', 'super-forms' ),
                                 'default'=> (!isset($attributes['list_id']) ? '' : $attributes['list_id']),
                                 'required'=>true, 
+                            ),
+                            'custom_fields' => array(
+                                'name'=>__( 'Custom fields to save (*|MERGE|* tags)', 'super-forms' ),
+                                'label'=>__( 'Seperate MailChimp field and field_name by pipes "|" (put each on a new line).<br />Example: MERGE3|phonenumber<br />With this method you can save custom MailChimp user data', 'super-forms' ),
+                                'desc'=>__( 'Allows you to save your custom fields within MailChimp', 'super-forms' ),
+                                'type' => 'textarea',
+                                'default'=> (!isset($attributes['custom_fields']) ? '' : $attributes['custom_fields']),
                             ),
                             'display_interests' => array(
                                 'name'=>__( 'Display interests', 'super-forms' ),
@@ -546,7 +556,7 @@ if(!class_exists('SUPER_Mailchimp')) :
 
                 // Retreive the list ID
                 $list_id = sanitize_text_field( $data['mailchimp_list_id']['value'] );
-                
+
                 // Setup CURL
                 $settings = get_option('super_settings');
                 $api_key = $settings['mailchimp_key'];
@@ -570,6 +580,33 @@ if(!class_exists('SUPER_Mailchimp')) :
                 if( isset( $data['last_name'] ) ) {
                     $user_data['merge_fields']['LNAME'] = $data['last_name']['value'];
                 }
+
+                // @since 1.2.0 - option to save custom fields
+                if( ( isset( $data['mailchimp_custom_fields_' . $list_id] ) ) && ($data['mailchimp_custom_fields_' . $list_id]!='') ) {
+                    $merge_fields = array();
+                    $fields = explode( "\n", $data['mailchimp_custom_fields_' . $list_id]['value'] );
+                    foreach( $fields as $k ) {
+                        $field = explode( "|", $k );
+                        // first check if a field with the name exists
+                        if( isset( $data[$field[1]]['value'] ) ) {
+                            $merge_fields[$field[0]] = $data[$field[1]]['value'];
+                        }else{
+                            // if no field exists, just save it as a string
+                            $string = SUPER_Common::email_tags( $field[1], $data, $settings );
+                            // check if string is serialized array
+                            $unserialize = @unserialize($string);
+                            if ($unserialize !== false) {
+                                $merge_fields[$field[0]] = $unserialize;
+                            }else{
+                                $merge_fields[$field[0]] = $string;
+                            }
+                        }
+                    }
+                    foreach( $merge_fields as $k => $v ) {
+                        $user_data['merge_fields'][$k] = $v;
+                    }
+                }
+
                 if( $data['mailchimp_send_confirmation']['value']==1 ) {
                     $user_data['status'] = 'pending';
                 }else{
@@ -578,7 +615,7 @@ if(!class_exists('SUPER_Mailchimp')) :
 
                 // Find out if we have some selected interests
                 if( isset( $data['mailchimp_interests'] ) ) {
-                    $interests = explode( ', ', $data['mailchimp_interests']['value'] );
+                    $interests = explode( ',', $data['mailchimp_interests']['value'] );
                     foreach($interests as $k => $v ){
                         $user_data['interests'][$v] = true;
                     }
