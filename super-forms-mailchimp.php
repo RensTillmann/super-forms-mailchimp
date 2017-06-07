@@ -295,7 +295,7 @@ if(!class_exists('SUPER_Mailchimp')) :
          *  @since      1.0.0
         */
         public static function add_stylesheet( $array ) {
-            $suffix         = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+            $suffix         = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '.min';
             $assets_path    = str_replace( array( 'http:', 'https:' ), '', plugin_dir_url( __FILE__ ) ) . '/assets/';
             $backend_path   = $assets_path . 'css/backend/';
             $array['super-mailchimp'] = array(
