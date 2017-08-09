@@ -11,7 +11,7 @@
  * Plugin Name: Super Forms - Mailchimp
  * Plugin URI:  http://codecanyon.net/item/super-forms-drag-drop-form-builder/13979866
  * Description: Subscribes and unsubscribes users from a specific Mailchimp list
- * Version:     1.3.0
+ * Version:     1.3.1
  * Author:      feeling4design
  * Author URI:  http://codecanyon.net/user/feeling4design
 */
@@ -37,7 +37,7 @@ if(!class_exists('SUPER_Mailchimp')) :
          *
          *	@since		1.0.0
         */
-        public $version = '1.3.0';
+        public $version = '1.3.1';
 
         
         /**
@@ -635,6 +635,14 @@ if(!class_exists('SUPER_Mailchimp')) :
 
                 // User already exists for this list, lets update the user with a PUT request
                 if( $output->status==400 ) {
+
+                    // @since 1.3.1 - Check for blank email address
+                    if( $output->detail=='Blank email address' ) {
+                        SUPER_Common::output_error(
+                            $error = true,
+                            $msg = __( 'Error: Blank email address', 'super-forms' )
+                        );
+                    }
 
                     // Only delete interests if this for is actually giving the user the option to select interests
                     if( isset( $data['mailchimp_interests'] ) ) {
