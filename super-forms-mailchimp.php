@@ -318,6 +318,13 @@ if(!class_exists('SUPER_Mailchimp')) :
          *  @since      1.0.0
         */
         public static function mailchimp( $tag, $atts, $inner, $shortcodes=null, $settings=null ) {
+          
+            // Fallback check for older super form versions
+            if (method_exists('SUPER_Common','generate_array_default_element_settings')) {
+                $defaults = SUPER_Common::generate_array_default_element_settings($shortcodes, 'form_elements', $tag);
+                $atts = wp_parse_args( $atts, $defaults );
+            }
+
             if( !isset( $atts['display_interests'] ) ) $atts['display_interests'] = 'no';
 
             if( $atts['display_interests']=='no' ) {
