@@ -11,7 +11,7 @@
  * Plugin Name: Super Forms - Mailchimp
  * Plugin URI:  http://codecanyon.net/item/super-forms-drag-drop-form-builder/13979866
  * Description: Subscribes and unsubscribes users from a specific Mailchimp list
- * Version:     1.3.1
+ * Version:     1.3.2
  * Author:      feeling4design
  * Author URI:  http://codecanyon.net/user/feeling4design
 */
@@ -37,7 +37,7 @@ if(!class_exists('SUPER_Mailchimp')) :
          *
          *	@since		1.0.0
         */
-        public $version = '1.3.1';
+        public $version = '1.3.2';
 
         
         /**
@@ -460,7 +460,7 @@ if(!class_exists('SUPER_Mailchimp')) :
                             ),
                             'custom_fields' => array(
                                 'name'=>__( 'Custom fields to save (*|MERGE|* tags)', 'super-forms' ),
-                                'label'=>__( 'Seperate MailChimp field and field_name by pipes "|" (put each on a new line).<br />Example: MERGE3|phonenumber<br />With this method you can save custom MailChimp user data', 'super-forms' ),
+                                'label'=>__( 'Seperate MailChimp field and field_name by pipes "|" (put each on a new line).<br />Example: PHONE|phonenumber<br />With this method you can save custom MailChimp user data', 'super-forms' ),
                                 'desc'=>__( 'Allows you to save your custom fields within MailChimp', 'super-forms' ),
                                 'type' => 'textarea',
                                 'default'=> (!isset($attributes['custom_fields']) ? '' : $attributes['custom_fields']),
